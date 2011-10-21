@@ -5,7 +5,7 @@
  Edit toolbar for PostGIS topology primitives (ISO SQL/MM based)
                              -------------------
         begin                : 2011-10-21
-        copyright            : (C) 2011 by NetLab
+        copyright            : (C) 2011 by Sandro Santilli <strk@keybit.net>
         email                : strk@keybit.net
  ***************************************************************************/
 
