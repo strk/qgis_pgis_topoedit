@@ -52,6 +52,14 @@ class PgTopoEditor:
     # run method that performs all the real work
     def run(self):
 
+        # check that a layer is selected
+        layer = self.iface.mapCanvas().currentLayer()
+        if not layer:
+          QMessageBox.information(None, "RemoveEdge", "A topology edge layer must be selected")
+          return
+
+        # TODO: check that the layer has an 'edge_id' field
+
         # create and show the dialog
         dlg = PgTopoEditorDialog()
         # show the dialog
@@ -61,4 +69,4 @@ class PgTopoEditor:
         if result == 1:
             # do something useful (delete the line containing pass and
             # substitute with your code
-            pass
+           pass
