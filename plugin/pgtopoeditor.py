@@ -58,6 +58,11 @@ class PgTopoEditor:
           QMessageBox.information(None, "RemoveEdge", "A topology edge layer must be selected")
           return
 
+        # check that the selected layer is a postgis one
+        if layer.providerType() != 'postgres':
+          QMessageBox.information(None, "RemoveEdge", "A PostGIS layer must be selected")
+          return
+
         # get the selected features
         selected = layer.selectedFeatures()
         if len(selected) != 1:
@@ -71,18 +76,15 @@ class PgTopoEditor:
           QMessageBox.information(None, "RemoveEdge", "The selected feature does not have an 'edge_id' field (not a topology edge layer?)")
           return
         edge_id = feature.attributeMap()[edge_id_fno]
-        QMessageBox.information(None, "RemoveEdge", "Edge id: " + edge_id.toString())
 
         # get the layer schema
+        toponame = QgsDataSourceURI( layer.source() ).schema()
+        if not toponame:
+          QMessageBox.information(None, "RemoveEdge", "Layer " + layer.name() + " doesn't look like a topology edge layer.\n(no schema set in datasource)")
+          return;
 
+        # TODO: should escape single ticks in toponame
+        sql = "SELECT ST_RemEdgeModFace('" + toponame + "', " + edge_id.toString() + ")";
 
-        # create and show the dialog
-        #dlg = PgTopoEditorDialog()
-        # show the dialog
-        #dlg.show()
-        #result = dlg.exec_()
-        # See if OK was pressed
-        #if result == 1:
-            # do something useful (delete the line containing pass and
-            # substitute with your code
-        #   pass
+        QMessageBox.information(None, "RemoveEdge", "Now I should run:\n" + sql)
+
