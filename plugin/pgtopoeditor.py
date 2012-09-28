@@ -42,7 +42,7 @@ class PgTopoEditor:
 
         # Add toolbar button and menu item
         self.iface.addToolBarIcon(self.action)
-        self.iface.addPluginToMenu("&PostGIS Topology Editor", self.action)
+        self.iface.addPluginToDatabaseMenu("&PostGIS Topology Editor", self.action)
 
     def unload(self):
         # Remove the plugin menu item and icon
