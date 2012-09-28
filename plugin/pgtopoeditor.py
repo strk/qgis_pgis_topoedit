@@ -58,15 +58,31 @@ class PgTopoEditor:
           QMessageBox.information(None, "RemoveEdge", "A topology edge layer must be selected")
           return
 
-        # TODO: check that the layer has an 'edge_id' field
+        # get the selected features
+        selected = layer.selectedFeatures()
+        if len(selected) != 1:
+          QMessageBox.information(None, "RemoveEdge", "A (single) edge must be selected.\n" + str(len(selected)) + " feature selected instead")
+          return
+        feature = selected[0]
+
+        # get its edge_id
+        edge_id_fno = layer.fieldNameIndex('edge_id')
+        if ( edge_id_fno < 0 ):
+          QMessageBox.information(None, "RemoveEdge", "The selected feature does not have an 'edge_id' field (not a topology edge layer?)")
+          return
+        edge_id = feature.attributeMap()[edge_id_fno]
+        QMessageBox.information(None, "RemoveEdge", "Edge id: " + edge_id.toString())
+
+        # get the layer schema
+
 
         # create and show the dialog
-        dlg = PgTopoEditorDialog()
+        #dlg = PgTopoEditorDialog()
         # show the dialog
-        dlg.show()
-        result = dlg.exec_()
+        #dlg.show()
+        #result = dlg.exec_()
         # See if OK was pressed
-        if result == 1:
+        #if result == 1:
             # do something useful (delete the line containing pass and
             # substitute with your code
-           pass
+        #   pass
