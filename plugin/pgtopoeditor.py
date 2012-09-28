@@ -27,6 +27,8 @@ import resources
 # Import the code for the dialog
 from pgtopoeditordialog import PgTopoEditorDialog
 
+import psycopg2
+
 class PgTopoEditor:
 
     def __init__(self, iface):
@@ -36,21 +38,21 @@ class PgTopoEditor:
     def initGui(self):
         # Create action that will start plugin configuration
         self.action = QAction(QIcon(":/plugins/pgtopoeditor/icon.png"), \
-            "PostGIS Topology Editor", self.iface.mainWindow())
+            "ST_RemEdgeModFace", self.iface.mainWindow())
         # connect the action to the run method
-        QObject.connect(self.action, SIGNAL("triggered()"), self.run)
+        QObject.connect(self.action, SIGNAL("triggered()"), self.doRemEdgeModFace)
 
         # Add toolbar button and menu item
         self.iface.addToolBarIcon(self.action)
-        self.iface.addPluginToDatabaseMenu("&PostGIS Topology Editor", self.action)
+        #self.iface.addPluginToDatabaseMenu("&PostGIS Topology Editor", self.action)
 
     def unload(self):
         # Remove the plugin menu item and icon
-        self.iface.removePluginMenu("&PostGIS Topology Editor",self.action)
+        #self.iface.removeDatabaseMenu("&PostGIS Topology Editor",self.action)
         self.iface.removeToolBarIcon(self.action)
 
     # run method that performs all the real work
-    def run(self):
+    def doRemEdgeModFace(self):
 
         # check that a layer is selected
         layer = self.iface.mapCanvas().currentLayer()
@@ -75,16 +77,28 @@ class PgTopoEditor:
         if ( edge_id_fno < 0 ):
           QMessageBox.information(None, "RemoveEdge", "The selected feature does not have an 'edge_id' field (not a topology edge layer?)")
           return
-        edge_id = feature.attributeMap()[edge_id_fno]
+        edge_id = feature.attributeMap()[edge_id_fno].toInt()[0]
+
+        uri = QgsDataSourceURI( layer.source() )
 
         # get the layer schema
-        toponame = QgsDataSourceURI( layer.source() ).schema()
+        toponame = str(uri.schema())
         if not toponame:
           QMessageBox.information(None, "RemoveEdge", "Layer " + layer.name() + " doesn't look like a topology edge layer.\n(no schema set in datasource)")
           return;
 
-        # TODO: should escape single ticks in toponame
-        sql = "SELECT ST_RemEdgeModFace('" + toponame + "', " + edge_id.toString() + ")";
+        try:
+          conn = psycopg2.connect( str(uri.connectionInfo()) )
+          cur = conn.cursor()
+          cur.execute("SELECT ST_RemEdgeModFace(%s, %s)", (toponame, edge_id))
+          conn.commit()
+          cur.close()
+          conn.close()
+        except psycopg2.Error as e:
+          QMessageBox.information(None, "RemoveEdge", "ERROR: " + str(e))
+          return
 
-        QMessageBox.information(None, "RemoveEdge", "Now I should run:\n" + sql)
+        QMessageBox.information(None, "RemoveEdge", "Edge " + str(edge_id) + " in topology " + toponame + " removed");
+        self.iface.mapCanvas().refresh()
 
+          
