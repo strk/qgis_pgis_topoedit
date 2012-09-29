@@ -20,8 +20,8 @@ tags=topology,postgis
 ; be probably possible to create a project on redmine
 ; if they are not filled
 homepage=http://github.com/strk/qgis_pgis_topoedit
-tracker=http://github.com/strk/qgis_pgis_topoedit
-repository=http://github.com/strk/qgis_pgis_topoedit
+tracker=https://github.com/strk/qgis_pgis_topoedit/issues
+repository=git://github.com/strk/qgis_pgis_topoedit.git
 icon=icon.png
 
 ; experimental flag
