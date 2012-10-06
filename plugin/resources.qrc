@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/plugins/pgtopoeditor" >
-        <file>icon.png</file>
+        <file>icons/topoedit.png</file>
+        <file>icons/remedge.png</file>
     </qresource>
 </RCC>

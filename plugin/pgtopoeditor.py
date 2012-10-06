@@ -37,7 +37,7 @@ class PgTopoEditor:
 
     def initGui(self):
         # Create action that will start plugin configuration
-        self.action = QAction(QIcon(":/plugins/pgtopoeditor/icon.png"), \
+        self.action = QAction(QIcon(":/plugins/pgtopoeditor/icons/remedge.png"), \
             "ST_RemEdgeModFace", self.iface.mainWindow())
         # connect the action to the run method
         QObject.connect(self.action, SIGNAL("triggered()"), self.doRemEdgeModFace)

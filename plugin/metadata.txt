@@ -22,7 +22,7 @@ tags=topology,postgis
 homepage=http://github.com/strk/qgis_pgis_topoedit
 tracker=https://github.com/strk/qgis_pgis_topoedit/issues
 repository=git://github.com/strk/qgis_pgis_topoedit.git
-icon=icon.png
+icon=icons/topoedit.png
 
 ; experimental flag
 experimental=True

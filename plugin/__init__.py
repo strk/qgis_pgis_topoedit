@@ -26,7 +26,7 @@ def description():
 def version():
     return "0.0"
 def icon():
-    return "icon.png"
+    return "icons/topoedit.png"
 def qgisMinimumVersion():
     return "1.8"
 def category():
