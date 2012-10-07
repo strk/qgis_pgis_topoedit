@@ -36,20 +36,19 @@ class PgTopoEditor:
         self.iface = iface
 
     def initGui(self):
-        # Create action that will start plugin configuration
+
+        self.toolbar = self.iface.addToolBar('topoedit');
+
+        # Create action for ST_RemEdgeModFace
         self.action = QAction(QIcon(":/plugins/pgtopoeditor/icons/remedge.png"), \
             "ST_RemEdgeModFace", self.iface.mainWindow())
-        # connect the action to the run method
         QObject.connect(self.action, SIGNAL("triggered()"), self.doRemEdgeModFace)
-
-        # Add toolbar button and menu item
-        self.iface.addToolBarIcon(self.action)
-        #self.iface.addPluginToDatabaseMenu("&PostGIS Topology Editor", self.action)
+        self.toolbar.addAction(self.action)
 
     def unload(self):
         # Remove the plugin menu item and icon
         #self.iface.removeDatabaseMenu("&PostGIS Topology Editor",self.action)
-        self.iface.removeToolBarIcon(self.action)
+        del self.toolbar
 
     # run method that performs all the real work
     def doRemEdgeModFace(self):
