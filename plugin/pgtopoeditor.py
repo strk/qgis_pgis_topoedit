@@ -137,7 +137,7 @@ class PgTopoEditor:
         # get the layer table
         table = str(uri.table())
         if not table:
-          QMessageBox.information(None, toolname, "Selected layer must be a table, not a view\n"
+          QMessag.Bo.information(None, toolname, "Selected layer must be a table, not a view\n"
             "(no table set in datasource)")
           return;
 
@@ -148,23 +148,34 @@ class PgTopoEditor:
             "(no column set in datasource)")
           return;
 
-        # TODO: get the layer topology
 
-# "delete from hun_adm1_topo.relation where layer_id = 1 and topogeo_id not in ( select id(topogeom) from hun_adm1 );"
-        QMessageBox.information(None, toolname, "Not implemeted yet, but we know the layer is " + schema + "." + table + "." + col)
+        layername = '"' + schema + '"."' + table + '"."' + col +'"'
 
+        try:
+          conn = psycopg2.connect( str(uri.connectionInfo()) )
+          cur = conn.cursor()
 
-#        try:
-#          conn = psycopg2.connect( str(uri.connectionInfo()) )
-#          cur = conn.cursor()
-#          cur.execute("SELECT ST_RemEdgeModFace(%s, %s)", (toponame, edge_id))
-#          conn.commit()
-#          cur.close()
-#          conn.close()
-#        except psycopg2.Error as e:
-#          QMessageBox.information(None, "RemoveEdge", "ERROR: " + str(e))
-#          return
-#
-#        #QMessageBox.information(None, "RemoveEdge", "Edge " + str(edge_id) + " in topology " + toponame + " removed");
-#        self.iface.mapCanvas().refresh()
+          # get the layer topology
+          cur.execute("SELECT t.name, l.layer_id FROM topology.topology t, topology.layer l WHERE l.schema_name = %s AND l.table_name = %s AND l.feature_column = %s AND t.id = l.topology_id", (schema, table, col))
+          if cur.rowcount == 1:
+            (toponame, layer_id) = cur.fetchone()
+
+            # delete orphaned geoms...
+            cur.execute('DELETE FROM "' + toponame
+              + '"."relation" WHERE layer_id = %s AND topogeo_id NOT IN ( SELECT id("'
+              + col + '") FROM "' + schema + '"."' + table + '")', (str(layer_id)))
+            QMessageBox.information(None, toolname, str(cur.rowcount)
+              + ' orphaned topogeometry objects removed from layer ' + layername)
+
+            conn.commit()
+          else:
+            QMessageBox.information(None, toolname, layername + ' is not a topology layer (not registered in topology.layer table)')
+          cur.close()
+          conn.close()
+        except psycopg2.Error as e:
+          QMessageBox.information(None, toolname, "ERROR: " + str(e))
+          return
+
+        #QMessageBox.information(None, toolname, "Not implemeted yet, but we know the layer is " + schema + "." + table + "." + col + ", the topology name is " + toponame + " and layer_id is " + str(layer_id))
+        self.iface.mapCanvas().refresh()
           
