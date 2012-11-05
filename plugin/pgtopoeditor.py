@@ -102,8 +102,15 @@ class PgTopoEditor:
             cur.close()
             continue
         conn.close()
+
+        removed = len(selected) - len(errors)
+        report = "Removed " + str(removed) + " edges over " + str(len(selected)) + " selected\n"
         if errors:
-          QMessageBox.information(None, toolname, "Edge removal failures:\n\n" + "\n".join(errors))
+          report += "\nFailures ("
+          if len(errors) > 5:
+            report += "first 5 of "
+          report += str(len(errors)) + "):\n\n" + "\n".join(errors[:5])
+        QMessageBox.information(None, toolname, report)
 
         #QMessageBox.information(None, toolname, "Edge " + str(edge_id) + " in topology " + toponame + " removed");
         self.iface.mapCanvas().refresh()
