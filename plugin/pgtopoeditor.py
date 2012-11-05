@@ -71,20 +71,6 @@ class PgTopoEditor:
           QMessageBox.information(None, toolname, "A PostGIS layer must be selected")
           return
 
-        # get the selected features
-        selected = layer.selectedFeatures()
-        if len(selected) != 1:
-          QMessageBox.information(None, toolname, "A (single) edge must be selected.\n" + str(len(selected)) + " feature selected instead")
-          return
-        feature = selected[0]
-
-        # get its edge_id
-        edge_id_fno = layer.fieldNameIndex('edge_id')
-        if ( edge_id_fno < 0 ):
-          QMessageBox.information(None, toolname, "The selected feature does not have an 'edge_id' field (not a topology edge layer?)")
-          return
-        edge_id = feature.attributeMap()[edge_id_fno].toInt()[0]
-
         uri = QgsDataSourceURI( layer.source() )
 
         # get the layer schema
@@ -93,16 +79,31 @@ class PgTopoEditor:
           QMessageBox.information(None, toolname, "Layer " + layer.name() + " doesn't look like a topology edge layer.\n(no schema set in datasource)")
           return;
 
-        try:
-          conn = psycopg2.connect( str(uri.connectionInfo()) )
-          cur = conn.cursor()
-          cur.execute("SELECT ST_RemEdgeModFace(%s, %s)", (toponame, edge_id))
-          conn.commit()
-          cur.close()
-          conn.close()
-        except psycopg2.Error as e:
-          QMessageBox.information(None, toolname, "ERROR: " + str(e))
-          return
+        edge_id_fno = layer.fieldNameIndex('edge_id')
+        if ( edge_id_fno < 0 ):
+          QMessageBox.information(None, toolname, "Layer " + layer.name() + " does not have an 'edge_id' field (not a topology edge layer?)")
+          return 
+
+        # get the selected features
+        errors = []
+        selected = layer.selectedFeatures()
+        conn = psycopg2.connect( str(uri.connectionInfo()) )
+        for feature in selected:
+          # get its edge_id
+          edge_id = feature.attributeMap()[edge_id_fno].toInt()[0]
+          try:
+            cur = conn.cursor()
+            cur.execute("SELECT ST_RemEdgeModFace(%s, %s)", (toponame, edge_id))
+            conn.commit()
+            cur.close()
+          except psycopg2.Error as e:
+            errors.append("Removing edge " + str(edge_id) + ":\n" + str(e))
+            conn.commit()
+            cur.close()
+            continue
+        conn.close()
+        if errors:
+          QMessageBox.information(None, toolname, "Edge removal failures:\n\n" + "\n".join(errors))
 
         #QMessageBox.information(None, toolname, "Edge " + str(edge_id) + " in topology " + toponame + " removed");
         self.iface.mapCanvas().refresh()
