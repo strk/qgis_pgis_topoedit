@@ -118,7 +118,7 @@ class PgTopoEditor:
           report += str(len(errors)) + "):\n\n" + "\n".join(errors[:5])
         QMessageBox.information(None, toolname, report)
 
-        #QMessageBox.information(None, toolname, "Edge " + str(edge_id) + " in topology " + toponame + " removed");
+        layer.removeSelection()
         self.iface.mapCanvas().refresh()
 
     # Remove selected nodes (if of degree 2)
@@ -165,12 +165,14 @@ class PgTopoEditor:
             cur.execute("SELECT ST_ModEdgeHeal(%s, %s, %s)", (toponame, edge1_id, edge2_id))
             conn.commit()
             cur.close()
+            layer.removeSelection()
             self.iface.mapCanvas().refresh()
         except psycopg2.Error as e:
             QMessageBox.information(None, toolname, str(e));
             conn.commit()
             cur.close()
             conn.close()
+
 
 
     # Collect all topogeoms registered as being in the currently selected
