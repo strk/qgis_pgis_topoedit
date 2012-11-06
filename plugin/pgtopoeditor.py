@@ -45,6 +45,12 @@ class PgTopoEditor:
         QObject.connect(self.action_remedge, SIGNAL("triggered()"), self.doRemEdgeModFace)
         self.toolbar.addAction(self.action_remedge)
 
+        # Create action for ST_ModEdgeHeal
+        self.action_remedge = QAction(QIcon(":/plugins/pgtopoeditor/icons/healedge.png"), \
+            "ST_ModEdgeHeal", self.iface.mainWindow())
+        QObject.connect(self.action_remedge, SIGNAL("triggered()"), self.doModEdgeHeal)
+        self.toolbar.addAction(self.action_remedge)
+
         # Create action for collecting orphaned topogeom
         self.action_gctgeom = QAction(QIcon(":/plugins/pgtopoeditor/icons/gctgeom.png"), \
             "Collect orphaned TopoGeoms", self.iface.mainWindow())
@@ -114,6 +120,58 @@ class PgTopoEditor:
 
         #QMessageBox.information(None, toolname, "Edge " + str(edge_id) + " in topology " + toponame + " removed");
         self.iface.mapCanvas().refresh()
+
+    # Remove selected nodes (if of degree 2)
+    def doModEdgeHeal(self):
+
+        toolname = "EdgeHeal"
+
+        # check that a layer is selected
+        layer = self.iface.mapCanvas().currentLayer()
+        if not layer:
+          QMessageBox.information(None, toolname, "A topology edge layer must be selected")
+          return
+
+        # check that the selected layer is a postgis one
+        if layer.providerType() != 'postgres':
+          QMessageBox.information(None, toolname, "A PostGIS layer must be selected")
+          return
+
+        uri = QgsDataSourceURI( layer.source() )
+
+        # get the layer schema
+        toponame = str(uri.schema())
+        if not toponame:
+          QMessageBox.information(None, toolname, "Layer " + layer.name() + " doesn't look like a topology edge layer.\n(no schema set in datasource)")
+          return;
+
+        edge_id_fno = layer.fieldNameIndex('edge_id')
+        if ( edge_id_fno < 0 ):
+          QMessageBox.information(None, toolname, "Layer " + layer.name() + " does not have an 'edge_id' field (not a topology edge layer?)")
+          return 
+
+        # get the selected features
+        selected = layer.selectedFeatures()
+        if ( len(selected) != 2 ):
+          QMessageBox.information(None, toolname, "You must select exactly two edges")
+          return 
+
+        # get their edge_id
+        edge1_id = selected[0].attributeMap()[edge_id_fno].toInt()[0]
+        edge2_id = selected[1].attributeMap()[edge_id_fno].toInt()[0]
+        try:
+            conn = psycopg2.connect( str(uri.connectionInfo()) )
+            cur = conn.cursor()
+            cur.execute("SELECT ST_ModEdgeHeal(%s, %s, %s)", (toponame, edge1_id, edge2_id))
+            conn.commit()
+            cur.close()
+            self.iface.mapCanvas().refresh()
+        except psycopg2.Error as e:
+            QMessageBox.information(None, toolname, str(e));
+            conn.commit()
+            cur.close()
+            conn.close()
+
 
     # Collect all topogeoms registered as being in the currently selected
     # topolayer and not really present in it
