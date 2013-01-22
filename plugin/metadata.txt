@@ -11,7 +11,7 @@ version=0.0.0
 
 ; start of optional metadata
 changelog=
-0.0.0
+  0.0.0
     Initial release
 
 ; tags are in comma separated value format, spaces are allowed
