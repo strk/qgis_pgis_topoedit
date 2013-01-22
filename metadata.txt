@@ -6,11 +6,13 @@ name=PostGIS Topology Editor
 qgisMinimumVersion=1.8
 description=Editing toolbar for PostGIS topology primitives (ISO SQL/MM based)
 category=Database
-version=0.0.0
+version=0.0.1
 ; end of mandatory metadata
 
 ; start of optional metadata
 changelog=
+  0.0.1
+    Fix version mismatch
   0.0.0
     Initial release
 
