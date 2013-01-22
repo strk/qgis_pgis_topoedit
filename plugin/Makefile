@@ -23,11 +23,13 @@ PLUGINNAME = pgtopoeditor
 
 PY_FILES = pgtopoeditor.py pgtopoeditordialog.py __init__.py
 
-EXTRAS = icons/topoedit.png icons/remedge.png
+EXTRAS = icons/topoedit.png icons/remedge.png metadata.txt COPYING
 
 UI_FILES = ui_pgtopoeditor.py
 
 RESOURCE_FILES = resources.py
+
+DISTFILES = $(PY_FILES) $(UI_FILES) $(RESOURCE_FILES) $(EXTRAS)
 
 default: compile
 
@@ -44,8 +46,11 @@ compile: $(UI_FILES) $(RESOURCE_FILES)
 # $HOME/.qgis/python/plugins
 deploy: compile
 	mkdir -p $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
-	cp -vf $(PY_FILES) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
-	cp -vf $(UI_FILES) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
-	cp -vf $(RESOURCE_FILES) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
-	cp -vf $(EXTRAS) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
+	cp -vf $(DISTFILES) $(HOME)/.qgis/python/plugins/$(PLUGINNAME)
+
+dist: compile
+	rm -f $(PLUGINNAME) # just in case
+	ln -s . $(PLUGINNAME)
+	( cd $(PLUGINNAME) && find $(DISTFILES); ) | sed 's@^@$(PLUGINNAME)/@' | zip $(PLUGINNAME).zip -@
+	rm -f $(PLUGINNAME)
 
