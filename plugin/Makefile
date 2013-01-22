@@ -2,10 +2,10 @@
 # PgTopoEditor
 # 
 # Edit toolbar for PostGIS topology primitives (ISO SQL/MM based)
-#                             -------------------
-#        begin                : 2011-10-21
-#        copyright            : (C) 2011 by Sandro Santilli <strk@keybit.net>
-#        email                : strk@keybit.net
+#                     -------------------
+#        begin        : 2011-10-21
+#        copyright    : (C) 2011-2013 by Sandro Santilli <strk@keybit.net>
+#        email        : strk@keybit.net
 # ***************************************************************************/
 # 
 #/***************************************************************************
@@ -23,7 +23,7 @@ PLUGINNAME = pgtopoeditor
 
 PY_FILES = pgtopoeditor.py pgtopoeditordialog.py __init__.py
 
-EXTRAS = icons/topoedit.png icons/remedge.png metadata.txt COPYING
+EXTRAS = icons/topoedit.png icons/remedge.png metadata.txt COPYING NEWS
 
 UI_FILES = ui_pgtopoeditor.py
 
@@ -56,3 +56,5 @@ dist: compile
 
 clean:
 	rm -f $(PLUGINNAME).zip
+	rm -f *.pyc
+	rm -f resources.py ui_pgtopoeditor.py
