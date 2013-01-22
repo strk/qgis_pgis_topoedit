@@ -1,16 +1,18 @@
 ; the next section is mandatory
 [general]
+author=Sandro Santilli
+email=strk@keybit.net
 name=PostGIS Topology Editor
 qgisMinimumVersion=1.8
 description=Editing toolbar for PostGIS topology primitives (ISO SQL/MM based)
 category=Database
-version=0.0
+version=0.0.0
 ; end of mandatory metadata
 
 ; start of optional metadata
 changelog=
-    first
-    inception
+0.0.0
+    Initial release
 
 ; tags are in comma separated value format, spaces are allowed
 tags=topology,postgis
