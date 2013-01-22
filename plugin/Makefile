@@ -54,3 +54,5 @@ dist: compile
 	( cd $(PLUGINNAME) && find $(DISTFILES); ) | sed 's@^@$(PLUGINNAME)/@' | zip $(PLUGINNAME).zip -@
 	rm -f $(PLUGINNAME)
 
+clean:
+	rm -f $(PLUGINNAME).zip
