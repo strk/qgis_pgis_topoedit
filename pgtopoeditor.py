@@ -29,6 +29,12 @@ from pgtopoeditordialog import PgTopoEditorDialog
 
 import psycopg2
 
+def getAttributeByIndex(feature, index):
+  if QGis.QGIS_VERSION_INT < 20000:
+    return feature[index]
+  else:
+    return feature.attribute()[index]
+
 class PgTopoEditor:
 
     def __init__(self, iface):
@@ -96,7 +102,7 @@ class PgTopoEditor:
         conn = psycopg2.connect( str(uri.connectionInfo()) )
         for feature in selected:
           # get its edge_id
-          edge_id = feature.attributeMap()[edge_id_fno].toInt()[0]
+          edge_id = getAttributeByIndex(feature, edge_id_fno).toInt()[0]
           try:
             cur = conn.cursor()
             cur.execute("SELECT ST_RemEdgeModFace(%s, %s)", (toponame, edge_id))
@@ -157,8 +163,8 @@ class PgTopoEditor:
           return 
 
         # get their edge_id
-        edge1_id = selected[0].attributeMap()[edge_id_fno].toInt()[0]
-        edge2_id = selected[1].attributeMap()[edge_id_fno].toInt()[0]
+        edge1_id = getAttributeByIndex(selected[0], edge_id_fno).toInt()[0]
+        edge2_id = getAttributeByIndex(selected[1], edge_id_fno).toInt()[0]
         try:
             conn = psycopg2.connect( str(uri.connectionInfo()) )
             cur = conn.cursor()

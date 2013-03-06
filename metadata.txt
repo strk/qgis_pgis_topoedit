@@ -11,6 +11,8 @@ version=0.0.1
 
 ; start of optional metadata
 changelog=
+  0.0.2
+    Fix support for qgis 2.0
   0.0.1
     Fix version mismatch
   0.0.0
