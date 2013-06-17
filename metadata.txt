@@ -4,13 +4,16 @@ author=Sandro Santilli
 email=strk@keybit.net
 name=PostGIS Topology Editor
 qgisMinimumVersion=1.8
+qgisMaximumVersion=2.99
 description=Editing toolbar for PostGIS topology primitives (ISO SQL/MM based)
 category=Database
-version=0.0.2
+version=0.0.3
 ; end of mandatory metadata
 
 ; start of optional metadata
 changelog=
+  0.0.3
+    Advertise support for qgis 2.x
   0.0.2
     Fix support for qgis 2.0
   0.0.1

@@ -24,11 +24,13 @@ def name():
 def description():
     return "Edit toolbar for PostGIS topology primitives (ISO SQL/MM based)"
 def version():
-    return "0.0.2"
+    return "0.0.3"
 def icon():
     return "icons/topoedit.png"
 def qgisMinimumVersion():
     return "1.8"
+def qgisMaximumVersion():
+    return "2.99"
 def category():
     return "Database"
 def classFactory(iface):
