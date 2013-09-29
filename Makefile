@@ -23,7 +23,7 @@ PLUGINNAME = pgtopoeditor
 
 PY_FILES = pgtopoeditor.py pgtopoeditordialog.py __init__.py
 
-EXTRAS = icons/topoedit.png icons/remedge.png metadata.txt COPYING NEWS
+EXTRAS = icons/topoedit.png icons/remedge.png metadata.txt COPYING
 
 UI_FILES = ui_pgtopoeditor.py
 
