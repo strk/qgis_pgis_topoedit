@@ -7,11 +7,13 @@ qgisMinimumVersion=1.8
 qgisMaximumVersion=2.99
 description=Editing toolbar for PostGIS topology primitives (ISO SQL/MM based)
 category=Database
-version=0.0.3
+version=0.1.0
 ; end of mandatory metadata
 
 ; start of optional metadata
 changelog=
+  0.1.0
+    Change node deletion tool to drop selected nodes
   0.0.3
     Advertise support for qgis 2.x
   0.0.2

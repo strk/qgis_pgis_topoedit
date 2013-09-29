@@ -24,7 +24,7 @@ def name():
 def description():
     return "Edit toolbar for PostGIS topology primitives (ISO SQL/MM based)"
 def version():
-    return "0.0.3"
+    return "0.1.0"
 def icon():
     return "icons/topoedit.png"
 def qgisMinimumVersion():
