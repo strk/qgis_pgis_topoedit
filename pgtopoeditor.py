@@ -22,6 +22,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
+from qgis.gui import QgsMessageBar
 # Initialize Qt resources from file resources.py
 import resources
 # Import the code for the dialog
@@ -100,8 +101,14 @@ class PgTopoEditor:
         # get the selected features
         errors = []
         selected = layer.selectedFeatures()
+        msgBar = self.iface.messageBar()
+        pb = QProgressBar( msgBar )
+        msgBar.pushWidget( pb, QgsMessageBar.INFO, 5 )
+        pb.setRange( 0, len(selected) )
+        pb.setValue( 0 )
         conn = psycopg2.connect( str(uri.connectionInfo()) )
         for feature in selected:
+          pb.setValue(pb.value()+1)
           # get its edge_id
           edge_id = getIntAttributeByIndex(feature, edge_id_fno)
           try:
@@ -160,8 +167,14 @@ class PgTopoEditor:
         # get the selected features
         errors = []
         selected = layer.selectedFeatures()
+        msgBar = self.iface.messageBar()
+        pb = QProgressBar( msgBar )
+        msgBar.pushWidget( pb, QgsMessageBar.INFO, 5 )
+        pb.setRange( 0, len(selected) )
+        pb.setValue( 0 )
         conn = psycopg2.connect( str(uri.connectionInfo()) )
         for feature in selected:
+          pb.setValue(pb.value()+1)
           # get its node_id
           node_id = getIntAttributeByIndex(feature, node_id_fno)
           try:
