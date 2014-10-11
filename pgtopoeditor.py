@@ -167,6 +167,9 @@ class PgTopoEditor:
         # get the selected features
         errors = []
         selected = layer.selectedFeatures()
+        if not selected:
+          QMessageBox.information(None, toolname, "Select the node(s) you want to remove")
+          return
         msgBar = self.iface.messageBar()
         pb = QProgressBar( msgBar )
         msgBar.pushWidget( pb, QgsMessageBar.INFO, 5 )
