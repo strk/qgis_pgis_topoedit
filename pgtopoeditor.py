@@ -138,12 +138,12 @@ class PgTopoEditor:
     # Remove selected nodes (of degree 2 or isolated)
     def doRemoveNode(self):
 
-        toolname = "EdgeHeal"
+        toolname = "RemoveNode"
 
         # check that a layer is selected
         layer = self.iface.mapCanvas().currentLayer()
         if not layer:
-          QMessageBox.information(None, toolname, "A topology edge layer must be selected")
+          QMessageBox.information(None, toolname, "A topology node layer must be selected")
           return
 
         # check that the selected layer is a postgis one
@@ -161,7 +161,7 @@ class PgTopoEditor:
 
         node_id_fno = layer.fieldNameIndex('node_id')
         if ( node_id_fno < 0 ):
-          QMessageBox.information(None, toolname, "Layer " + layer.name() + " does not have an 'node_id' field (not a topology edge layer?)")
+          QMessageBox.information(None, toolname, "Layer " + layer.name() + " does not have an 'node_id' field (not a topology node layer?)")
           return 
 
         # get the selected features
