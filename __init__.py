@@ -5,7 +5,7 @@
  Edit toolbar for PostGIS topology primitives (ISO SQL/MM based)
                              -------------------
         begin                : 2011-10-21
-        copyright            : (C) 2011 by Sandro Santilli <strk@keybit.net>
+        copyright            : (C) 2011-2014 by Sandro Santilli <strk@keybit.net>
         email                : strk@keybit.net
  ***************************************************************************/
 
@@ -24,7 +24,7 @@ def name():
 def description():
     return "Edit toolbar for PostGIS topology primitives (ISO SQL/MM based)"
 def version():
-    return "0.1.0"
+    return "0.1.1"
 def icon():
     return "icons/topoedit.png"
 def qgisMinimumVersion():
