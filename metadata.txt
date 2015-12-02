@@ -7,11 +7,13 @@ qgisMinimumVersion=1.8
 qgisMaximumVersion=2.99
 description=Editing toolbar for PostGIS topology primitives (ISO SQL/MM based)
 category=Database
-version=0.1.1
+version=0.2.0
 ; end of mandatory metadata
 
 ; start of optional metadata
 changelog=
+  0.2.0
+    Add dangling edge selector tool
   0.1.1
     Fix misleading text in node removal tool warnings
     Hint about selecting elements to be removed

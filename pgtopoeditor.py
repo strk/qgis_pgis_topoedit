@@ -3,10 +3,10 @@
  PgTopoEditor
                                  A QGIS plugin
  Edit toolbar for PostGIS topology primitives (ISO SQL/MM based)
-                              -------------------
-        begin                : 2011-10-21
-        copyright            : (C) 2011 by Sandro Santilli <strk@keybit.net>
-        email                : strk@keybit.net
+                        -------------------
+        begin          : 2011-10-21
+        copyright      : (C) 2011-2015 by Sandro Santilli <strk@keybit.net>
+        email          : strk@keybit.net
  ***************************************************************************/
 
 /***************************************************************************
@@ -47,15 +47,21 @@ class PgTopoEditor:
 
         self.toolbar = self.iface.addToolBar('topoedit');
 
+        # Create action for selecting dangling edges
+        action = QAction(QIcon(":/plugins/pgtopoeditor/icons/seldanglingedge.png"), \
+            "Select dangling edges", self.iface.mainWindow())
+        QObject.connect(action, SIGNAL("triggered()"), self.doSelDanglingEdges)
+        self.toolbar.addAction(action)
+
         # Create action for ST_RemEdgeModFace
         action = QAction(QIcon(":/plugins/pgtopoeditor/icons/remedge.png"), \
-            "Remove edge", self.iface.mainWindow())
+            "Remove selected edges", self.iface.mainWindow())
         QObject.connect(action, SIGNAL("triggered()"), self.doRemEdgeModFace)
         self.toolbar.addAction(action)
 
         # Create action for ST_ModEdgeHeal
         action = QAction(QIcon(":/plugins/pgtopoeditor/icons/healedge.png"), \
-            "Remove node", self.iface.mainWindow())
+            "Remove selected nodes", self.iface.mainWindow())
         QObject.connect(action, SIGNAL("triggered()"), self.doRemoveNode)
         self.toolbar.addAction(action)
 
@@ -68,6 +74,54 @@ class PgTopoEditor:
     def unload(self):
         # Remove the plugin menu item and icons
         del self.toolbar
+
+    # Select dangling edges
+    def doSelDanglingEdges(self):
+
+        toolname = "SelectDanglingEdges"
+
+        # check that a layer is selected
+        layer = self.iface.mapCanvas().currentLayer()
+        if not layer:
+          QMessageBox.information(None, toolname, "A topology edge layer must be selected")
+          return
+
+        # check that the selected layer is a postgis one
+        if layer.providerType() != 'postgres':
+          QMessageBox.information(None, toolname, "A PostGIS layer must be selected")
+          return
+
+        uri = QgsDataSourceURI( layer.source() )
+
+        # get the layer schema
+        toponame = str(uri.schema())
+        if not toponame:
+          QMessageBox.information(None, toolname, "Layer " + layer.name() + " doesn't look like a topology edge layer.\n(no schema set in datasource)")
+          return;
+
+        edge_id_fno = layer.fieldNameIndex('edge_id')
+        if ( edge_id_fno < 0 ):
+          QMessageBox.information(None, toolname, "Layer " + layer.name() + " does not have an 'edge_id' field (not a topology edge layer?)")
+          return
+
+        # find dangling edges
+        conn = psycopg2.connect( str(uri.connectionInfo()) )
+        cur = conn.cursor()
+        #cur.execute('SELECT edge_id FROM "' + toponame + '".edge_data LIMIT 1')
+        cur.execute('''
+select distinct (array_agg(e.edge_id))[1] eid
+from "''' + toponame + '''".edge_data e, side_spikes.node n
+   where ( n.node_id = e.start_node or n.node_id = e.end_node )
+    group by n.node_id
+    having count(e.edge_id) = 1''')
+        fids = [r[0] for r in cur.fetchall()]
+        cur.close()
+        conn.close()
+
+        layer.select( fids )
+        # layer.select seems to automatically refresh canvas
+        #self.iface.mapCanvas().refresh()
+
 
     # Remove selected edge
     def doRemEdgeModFace(self):
