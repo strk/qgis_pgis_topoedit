@@ -13,6 +13,8 @@ version=0.2.1
 
 ; start of optional metadata
 changelog=
+  0.2.1
+    Fix dangling edge selector tool icon background
   0.2.0
     Add dangling edge selector tool
   0.1.1
