@@ -8,7 +8,7 @@ qgisMaximumVersion=2.99
 description=Editing toolbar for PostGIS topology primitives (ISO SQL/MM based)
 about=Editing toolbar for PostGIS topology primitives (ISO SQL/MM based)
 category=Database
-version=0.2.0
+version=0.2.1
 ; end of mandatory metadata
 
 ; start of optional metadata
