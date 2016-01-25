@@ -110,7 +110,7 @@ class PgTopoEditor:
         #cur.execute('SELECT edge_id FROM "' + toponame + '".edge_data LIMIT 1')
         cur.execute('''
 select distinct (array_agg(e.edge_id))[1] eid
-from "''' + toponame + '''".edge_data e, side_spikes.node n
+from "''' + toponame + '''".edge_data e, "''' + toponame + '''".node n
    where ( n.node_id = e.start_node or n.node_id = e.end_node )
     group by n.node_id
     having count(e.edge_id) = 1''')
