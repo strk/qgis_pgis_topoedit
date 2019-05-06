@@ -19,20 +19,20 @@
  ***************************************************************************/
 """
 # Import the PyQt and QGIS libraries
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from qgis.core import *
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction, QMessageBox, QProgressBar
+from qgis.core import Qgis, QgsDataSourceUri
 from qgis.gui import QgsMessageBar
 # Initialize Qt resources from file resources.py
-import resources
+from . import resources
 # Import the code for the dialog
-from pgtopoeditordialog import PgTopoEditorDialog
+from .pgtopoeditordialog import PgTopoEditorDialog
 
 import psycopg2
 
 def getIntAttributeByIndex(feature, index):
   # QMessageBox.information(None, '?', "Version of qgis is " + str(QGis.QGIS_VERSION_INT))
-  if QGis.QGIS_VERSION_INT < 10900:
+  if Qgis.QGIS_VERSION_INT < 10900:
     return feature[index].toInt()[0]
   else:
     return feature[index]
@@ -50,25 +50,25 @@ class PgTopoEditor:
         # Create action for selecting dangling edges
         action = QAction(QIcon(":/plugins/pgtopoeditor/icons/seldanglingedge.png"), \
             "Select dangling edges", self.iface.mainWindow())
-        QObject.connect(action, SIGNAL("triggered()"), self.doSelDanglingEdges)
+        action.triggered.connect(self.doSelDanglingEdges)
         self.toolbar.addAction(action)
 
         # Create action for ST_RemEdgeModFace
         action = QAction(QIcon(":/plugins/pgtopoeditor/icons/remedge.png"), \
             "Remove selected edges", self.iface.mainWindow())
-        QObject.connect(action, SIGNAL("triggered()"), self.doRemEdgeModFace)
+        action.triggered.connect(self.doRemEdgeModFace)
         self.toolbar.addAction(action)
 
         # Create action for ST_ModEdgeHeal
         action = QAction(QIcon(":/plugins/pgtopoeditor/icons/healedge.png"), \
             "Remove selected nodes", self.iface.mainWindow())
-        QObject.connect(action, SIGNAL("triggered()"), self.doRemoveNode)
+        action.triggered.connect(self.doRemoveNode)
         self.toolbar.addAction(action)
 
         # Create action for collecting orphaned topogeom
         self.action_gctgeom = QAction(QIcon(":/plugins/pgtopoeditor/icons/gctgeom.png"), \
             "Collect orphaned TopoGeoms", self.iface.mainWindow())
-        QObject.connect(self.action_gctgeom, SIGNAL("triggered()"), self.doDropOrphanedTopoGeoms)
+        self.action_gctgeom.triggered.connect(self.doDropOrphanedTopoGeoms)
         self.toolbar.addAction(self.action_gctgeom)
 
     def unload(self):
@@ -81,7 +81,7 @@ class PgTopoEditor:
         toolname = "SelectDanglingEdges"
 
         # check that a layer is selected
-        layer = self.iface.mapCanvas().currentLayer()
+        layer = self.iface.activeLayer()
         if not layer:
           QMessageBox.information(None, toolname, "A topology edge layer must be selected")
           return
@@ -91,7 +91,7 @@ class PgTopoEditor:
           QMessageBox.information(None, toolname, "A PostGIS layer must be selected")
           return
 
-        uri = QgsDataSourceURI( layer.source() )
+        uri = QgsDataSourceUri(layer.source())
 
         # get the layer schema
         toponame = str(uri.schema())
@@ -99,7 +99,7 @@ class PgTopoEditor:
           QMessageBox.information(None, toolname, "Layer " + layer.name() + " doesn't look like a topology edge layer.\n(no schema set in datasource)")
           return;
 
-        edge_id_fno = layer.fieldNameIndex('edge_id')
+        edge_id_fno = layer.dataProvider().fieldNameIndex('edge_id')
         if ( edge_id_fno < 0 ):
           QMessageBox.information(None, toolname, "Layer " + layer.name() + " does not have an 'edge_id' field (not a topology edge layer?)")
           return
@@ -139,7 +139,7 @@ from "''' + toponame + '''".edge_data e, "''' + toponame + '''".node n
           QMessageBox.information(None, toolname, "A PostGIS layer must be selected")
           return
 
-        uri = QgsDataSourceURI( layer.source() )
+        uri = QgsDataSourceUri(layer.source())
 
         # get the layer schema
         toponame = str(uri.schema())
@@ -147,7 +147,7 @@ from "''' + toponame + '''".edge_data e, "''' + toponame + '''".node n
           QMessageBox.information(None, toolname, "Layer " + layer.name() + " doesn't look like a topology edge layer.\n(no schema set in datasource)")
           return;
 
-        edge_id_fno = layer.fieldNameIndex('edge_id')
+        edge_id_fno = layer.dataProvider().fieldNameIndex('edge_id')
         if ( edge_id_fno < 0 ):
           QMessageBox.information(None, toolname, "Layer " + layer.name() + " does not have an 'edge_id' field (not a topology edge layer?)")
           return 
@@ -208,7 +208,7 @@ from "''' + toponame + '''".edge_data e, "''' + toponame + '''".node n
           QMessageBox.information(None, toolname, "A PostGIS layer must be selected")
           return
 
-        uri = QgsDataSourceURI( layer.source() )
+        uri = QgsDataSourceUri(layer.source())
 
         # get the layer schema
         toponame = str(uri.schema())
