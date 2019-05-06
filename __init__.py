@@ -24,16 +24,16 @@ def name():
 def description():
     return "Edit toolbar for PostGIS topology primitives (ISO SQL/MM based)"
 def version():
-    return "0.2.2"
+    return "0.3.1"
 def icon():
     return "icons/topoedit.png"
 def qgisMinimumVersion():
-    return "1.8"
+    return "3.0"
 def qgisMaximumVersion():
-    return "2.99"
+    return "3.99"
 def category():
     return "Database"
 def classFactory(iface):
     # load PgTopoEditor class from file PgTopoEditor
-    from pgtopoeditor import PgTopoEditor
+    from .pgtopoeditor import PgTopoEditor
     return PgTopoEditor(iface)

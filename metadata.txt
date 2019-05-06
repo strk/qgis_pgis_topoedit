@@ -3,16 +3,18 @@
 author=Sandro Santilli
 email=strk@keybit.net
 name=PostGIS Topology Editor
-qgisMinimumVersion=1.8
-qgisMaximumVersion=2.99
+qgisMinimumVersion=3.0
+qgisMaximumVersion=3.99
 description=Editing toolbar for PostGIS topology primitives (ISO SQL/MM based)
 about=Editing toolbar for PostGIS topology primitives (ISO SQL/MM based)
 category=Database
-version=0.2.2
+version=0.3.1
 ; end of mandatory metadata
 
 ; start of optional metadata
 changelog=
+  0.3.1
+    Make compatible with QGIS3
   0.2.2
     Fix hard-coded schema name in dangling edge selector tool
   0.2.1

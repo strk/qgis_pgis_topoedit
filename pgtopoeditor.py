@@ -160,7 +160,7 @@ from "''' + toponame + '''".edge_data e, "''' + toponame + '''".node n
           return
         msgBar = self.iface.messageBar()
         pb = QProgressBar( msgBar )
-        msgBar.pushWidget( pb, QgsMessageBar.INFO, 5 )
+        msgBar.pushWidget( pb, Qgis.Info, 5 )
         pb.setRange( 0, len(selected) )
         pb.setValue( 0 )
         conn = psycopg2.connect( str(uri.connectionInfo()) )
@@ -216,7 +216,7 @@ from "''' + toponame + '''".edge_data e, "''' + toponame + '''".node n
           QMessageBox.information(None, toolname, "Layer " + layer.name() + " doesn't look like a topology node layer.\n(no schema set in datasource)")
           return;
 
-        node_id_fno = layer.fieldNameIndex('node_id')
+        node_id_fno = layer.dataProvider().fieldNameIndex('node_id')
         if ( node_id_fno < 0 ):
           QMessageBox.information(None, toolname, "Layer " + layer.name() + " does not have an 'node_id' field (not a topology node layer?)")
           return 
@@ -229,7 +229,7 @@ from "''' + toponame + '''".edge_data e, "''' + toponame + '''".node n
           return
         msgBar = self.iface.messageBar()
         pb = QProgressBar( msgBar )
-        msgBar.pushWidget( pb, QgsMessageBar.INFO, 5 )
+        msgBar.pushWidget( pb, Qgis.Info, 5 )
         pb.setRange( 0, len(selected) )
         pb.setValue( 0 )
         conn = psycopg2.connect( str(uri.connectionInfo()) )
@@ -299,7 +299,7 @@ from "''' + toponame + '''".edge_data e, "''' + toponame + '''".node n
           QMessageBox.information(None, toolname, "A PostGIS layer must be selected")
           return
 
-        uri = QgsDataSourceURI( layer.source() )
+        uri = QgsDataSourceUri( layer.source() )
 
         # get the layer schema
         schema = str(uri.schema())
@@ -311,7 +311,7 @@ from "''' + toponame + '''".edge_data e, "''' + toponame + '''".node n
         # get the layer table
         table = str(uri.table())
         if not table:
-          QMessag.Bo.information(None, toolname, "Selected layer must be a table, not a view\n"
+          QMessageBox.information(None, toolname, "Selected layer must be a table, not a view\n"
             "(no table set in datasource)")
           return;
 
@@ -335,9 +335,9 @@ from "''' + toponame + '''".edge_data e, "''' + toponame + '''".node n
             (toponame, layer_id) = cur.fetchone()
 
             # delete orphaned geoms...
-            cur.execute('DELETE FROM "' + toponame
-              + '"."relation" WHERE layer_id = %s AND topogeo_id NOT IN ( SELECT id("'
-              + col + '") FROM "' + schema + '"."' + table + '")', (str(layer_id)))
+            cur.execute('DELETE FROM "' + toponame +
+              '"."relation" WHERE layer_id = %s AND topogeo_id NOT IN ( SELECT id("'
+              + col + '") FROM "' + schema + '"."' + table + '")', (str(layer_id),))
             QMessageBox.information(None, toolname, str(cur.rowcount)
               + ' orphaned topogeometry objects removed from layer ' + layername)
 
