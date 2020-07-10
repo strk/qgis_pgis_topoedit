@@ -1,7 +1,7 @@
 ; the next section is mandatory
 [general]
 author=Sandro Santilli
-email=strk@keybit.net
+email=strk@kbt.io
 name=PostGIS Topology Editor
 qgisMinimumVersion=3.0
 qgisMaximumVersion=3.99
