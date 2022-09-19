@@ -112,6 +112,7 @@ class PgTopoEditor:
 select distinct (array_agg(e.edge_id))[1] eid
 from "''' + toponame + '''".edge_data e, "''' + toponame + '''".node n
    where ( n.node_id = e.start_node or n.node_id = e.end_node )
+    and e.start_node != e.end_node
     group by n.node_id
     having count(e.edge_id) = 1''')
         fids = [r[0] for r in cur.fetchall()]
