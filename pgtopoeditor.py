@@ -171,7 +171,7 @@ from "''' + toponame + '''".edge_data e, "''' + toponame + '''".node n
           edge_id = getIntAttributeByIndex(feature, edge_id_fno)
           try:
             cur = conn.cursor()
-            cur.execute("SELECT ST_RemEdgeModFace(%s, %s)", (toponame, edge_id))
+            cur.execute("SELECT topology.ST_RemEdgeModFace(%s, %s)", (toponame, edge_id))
             conn.commit()
             cur.close()
           except psycopg2.Error as e:
@@ -240,14 +240,14 @@ from "''' + toponame + '''".edge_data e, "''' + toponame + '''".node n
           node_id = getIntAttributeByIndex(feature, node_id_fno)
           try:
             cur = conn.cursor()
-            cur.execute("SELECT abs((getnodeedges(%s, %s)).edge)", (toponame, node_id))
+            cur.execute("SELECT abs((topology.GetNodeEdges(%s, %s)).edge)", (toponame, node_id))
             if cur.rowcount == 2:
               (edge1_id) = cur.fetchone()
               (edge2_id) = cur.fetchone()
               cur.close()
               if edge1_id != edge2_id:
                 cur = conn.cursor()
-                cur.execute("SELECT ST_ModEdgeHeal(%s, %s, %s)", (toponame, edge1_id, edge2_id))
+                cur.execute("SELECT topology.ST_ModEdgeHeal(%s, %s, %s)", (toponame, edge1_id, edge2_id))
                 conn.commit()
                 cur.close()
               else:
@@ -255,7 +255,7 @@ from "''' + toponame + '''".edge_data e, "''' + toponame + '''".node n
             elif cur.rowcount == 0:
               cur.close()
               cur = conn.cursor()
-              cur.execute("SELECT ST_RemIsoNode(%s, %s)", (toponame, node_id))
+              cur.execute("SELECT topology.ST_RemIsoNode(%s, %s)", (toponame, node_id))
               conn.commit()
               cur.close()
             else:
