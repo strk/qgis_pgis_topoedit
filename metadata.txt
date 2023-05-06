@@ -8,11 +8,15 @@ qgisMaximumVersion=3.99
 description=Editing toolbar for PostGIS topology primitives (ISO SQL/MM based)
 about=Editing toolbar for PostGIS topology primitives (ISO SQL/MM based)
 category=Database
-version=0.3.0
+version=0.3.1
 ; end of mandatory metadata
 
 ; start of optional metadata
 changelog=
+  0.3.1
+    Qualify calls to topology functions
+    Do not select closed edges as dangling (#5)
+    Rename toolbar to "PostGIS Topology Edit Toolbar"
   0.3.0
     Make compatible with QGIS3
   0.2.2
@@ -42,9 +46,9 @@ tags=topology,postgis
 ; in a future version of the web application it will
 ; be probably possible to create a project on redmine
 ; if they are not filled
-homepage=http://github.com/strk/qgis_pgis_topoedit
+homepage=https://github.com/strk/qgis_pgis_topoedit
 tracker=https://github.com/strk/qgis_pgis_topoedit/issues
-repository=git://github.com/strk/qgis_pgis_topoedit.git
+repository=https://github.com/strk/qgis_pgis_topoedit.git
 icon=icons/topoedit.png
 
 ; experimental flag
