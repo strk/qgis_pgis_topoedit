@@ -23,13 +23,23 @@ PLUGINNAME = pgtopoeditor
 
 PY_FILES = pgtopoeditor.py pgtopoeditordialog.py __init__.py
 
-EXTRAS = icons/topoedit.png icons/remedge.png metadata.txt COPYING
+ICONS = \
+  icons/healedge.png \
+  icons/topoedit.png \
+  icons/selringleft.png \
+  icons/seldanglingedge.png \
+  icons/gctgeom.png \
+  icons/selringright.png \
+  icons/remedge.png
+
+EXTRAS = metadata.txt COPYING
 
 UI_FILES = ui_pgtopoeditor.py
 
-RESOURCE_FILES = resources.py
+RESOURCE_FILES = \
+  resources.py
 
-DISTFILES = $(PY_FILES) $(UI_FILES) $(RESOURCE_FILES) $(EXTRAS)
+DISTFILES = $(PY_FILES) $(UI_FILES) $(RESOURCE_FILES) $(ICONS) $(EXTRAS)
 
 default: compile
 
@@ -40,6 +50,8 @@ compile: $(UI_FILES) $(RESOURCE_FILES)
 
 %.py : %.ui
 	pyuic5 -o $@ $<
+
+resources.py: $(ICONS)
 
 # The deploy  target only works on unix like operating system where
 # the Python plugin directory is located at:

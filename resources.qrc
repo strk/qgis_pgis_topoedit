@@ -4,6 +4,8 @@
         <file>icons/healedge.png</file>
         <file>icons/remedge.png</file>
         <file>icons/seldanglingedge.png</file>
+        <file>icons/selringleft.png</file>
+        <file>icons/selringright.png</file>
         <file>icons/topoedit.png</file>
     </qresource>
 </RCC>

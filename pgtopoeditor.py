@@ -53,6 +53,18 @@ class PgTopoEditor:
         action.triggered.connect(self.doSelDanglingEdges)
         self.toolbar.addAction(action)
 
+        # Create action for selecting edge's left ring
+        action = QAction(QIcon(":/plugins/pgtopoeditor/icons/selringleft.png"), \
+            "Select left ring", self.iface.mainWindow())
+        action.triggered.connect(self.doSelLeftRing)
+        self.toolbar.addAction(action)
+
+        # Create action for selecting edge's right ring
+        action = QAction(QIcon(":/plugins/pgtopoeditor/icons/selringright.png"), \
+            "Select right ring", self.iface.mainWindow())
+        action.triggered.connect(self.doSelRightRing)
+        self.toolbar.addAction(action)
+
         # Create action for ST_RemEdgeModFace
         action = QAction(QIcon(":/plugins/pgtopoeditor/icons/remedge.png"), \
             "Remove selected edges", self.iface.mainWindow())
@@ -74,6 +86,20 @@ class PgTopoEditor:
     def unload(self):
         # Remove the plugin menu item and icons
         del self.toolbar
+
+    def requireEdgeLayerSelected(self, toolname):
+        # check that a layer is selected
+        layer = self.iface.activeLayer()
+        if not layer:
+          QMessageBox.information(None, toolname, "A topology edge layer must be selected")
+          return
+
+        # check that the selected layer is a postgis one
+        if layer.providerType() != 'postgres':
+          QMessageBox.information(None, toolname, "A PostGIS layer must be selected")
+          return
+
+        return layer
 
     # Select dangling edges
     def doSelDanglingEdges(self):
@@ -122,6 +148,102 @@ from "''' + toponame + '''".edge_data e, "''' + toponame + '''".node n
         layer.select( fids )
         # layer.select seems to automatically refresh canvas
         #self.iface.mapCanvas().refresh()
+
+    # Select left ring of edge
+    def doSelLeftRing(self):
+
+        toolname = "SelectLeftRing"
+
+        # check that a layer is selected
+        layer = self.requireEdgeLayerSelected(toolname)
+        if not layer:
+          return
+
+        uri = QgsDataSourceUri(layer.source())
+
+        # get the layer schema
+        toponame = str(uri.schema())
+        if not toponame:
+          QMessageBox.information(None, toolname, "Layer " + layer.name() + " doesn't look like a topology edge layer.\n(no schema set in datasource)")
+          return
+
+        edge_id_fno = layer.dataProvider().fieldNameIndex('edge_id')
+        if ( edge_id_fno < 0 ):
+          QMessageBox.information(None, toolname, "Layer " + layer.name() + " does not have an 'edge_id' field (not a topology edge layer?)")
+          return
+
+        # get the selected features
+        errors = []
+        selected = layer.selectedFeatures()
+        if not selected:
+          QMessageBox.information(None, toolname, "Select the edge you want the left ring of")
+          return
+        if len(selected) > 1:
+          QMessageBox.information(None, toolname, "Select a single edge")
+          return
+
+        feature = selected[0]
+        edge_id = getIntAttributeByIndex(feature, edge_id_fno)
+
+        # find left ring
+        conn = psycopg2.connect( str(uri.connectionInfo()) )
+        cur = conn.cursor()
+        cur.execute("select distinct abs(edge) from GetRingEdges('{toponame}',{edge_id})".
+          format(toponame=toponame, edge_id=edge_id)
+        )
+        fids = [r[0] for r in cur.fetchall()]
+        cur.close()
+        conn.close()
+
+        layer.select( fids )
+
+    # Select right ring of edge
+    def doSelRightRing(self):
+
+        toolname = "SelectRightRing"
+
+        # check that a layer is selected
+        layer = self.requireEdgeLayerSelected(toolname)
+        if not layer:
+          return
+
+        uri = QgsDataSourceUri(layer.source())
+
+        # get the layer schema
+        toponame = str(uri.schema())
+        if not toponame:
+          QMessageBox.information(None, toolname, "Layer " + layer.name() + " doesn't look like a topology edge layer.\n(no schema set in datasource)")
+          return
+
+        edge_id_fno = layer.dataProvider().fieldNameIndex('edge_id')
+        if ( edge_id_fno < 0 ):
+          QMessageBox.information(None, toolname, "Layer " + layer.name() + " does not have an 'edge_id' field (not a topology edge layer?)")
+          return
+
+        # get the selected features
+        errors = []
+        selected = layer.selectedFeatures()
+        if not selected:
+          QMessageBox.information(None, toolname, "Select the edge you want the left ring of")
+          return
+        if len(selected) > 1:
+          QMessageBox.information(None, toolname, "Select a single edge")
+          return
+
+        feature = selected[0]
+        edge_id = getIntAttributeByIndex(feature, edge_id_fno)
+
+        # find right ring
+        conn = psycopg2.connect( str(uri.connectionInfo()) )
+        cur = conn.cursor()
+        cur.execute("select distinct abs(edge) from GetRingEdges('{toponame}',{edge_id})".
+          format(toponame=toponame, edge_id=-edge_id)
+        )
+        fids = [r[0] for r in cur.fetchall()]
+        cur.close()
+        conn.close()
+
+        layer.select( fids )
 
 
     # Remove selected edge
