@@ -8,11 +8,13 @@ qgisMaximumVersion=3.99
 description=Editing toolbar for PostGIS topology primitives (ISO SQL/MM based)
 about=Editing toolbar for PostGIS topology primitives (ISO SQL/MM based)
 category=Database
-version=0.3.1
+version=0.4.0
 ; end of mandatory metadata
 
 ; start of optional metadata
 changelog=
+  0.4.0
+    Add edge left/right ring selection tools
   0.3.1
     Qualify calls to topology functions
     Do not select closed edges as dangling (#5)
