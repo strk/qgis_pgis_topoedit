@@ -46,6 +46,7 @@ class PgTopoEditor:
     def initGui(self):
 
         self.toolbar = self.iface.addToolBar('PostGIS Topology Edit Toolbar');
+        self.toolbar.setObjectName('PostGIS_Topology_Edit_Toolbar');
 
         # Create action for selecting dangling edges
         action = QAction(QIcon(":/plugins/pgtopoeditor/icons/seldanglingedge.png"), \
