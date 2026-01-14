@@ -32,7 +32,7 @@ ICONS = \
   icons/selringright.png \
   icons/remedge.png
 
-EXTRAS = metadata.txt COPYING
+EXTRAS = metadata.txt LICENSE
 
 UI_FILES = ui_pgtopoeditor.py
 
